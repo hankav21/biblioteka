@@ -6,6 +6,13 @@
     <title>Lista ksiazek</title>
 </head>
 <body>
-    <h1>Lista ksiazek</h1>
+    <h1>Lista ksiazek {{k.uzytkownicy}}</h1>
+
+    {% for pozycja in ksiazki %}
+        <li>
+            {{ pozycja}}
+            <a href="{{ url_for('widok_ksiazki', ksiazka=pozycja) }}">Wypozycz</a>
+        </li>
+    {% endfor %}
 </body>
 </html>

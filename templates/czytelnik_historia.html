@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historyczne wypozyczenia czytelnika {{czytelnik}}</title>
+</head>
+<body>
+    <h1>Archiwalne wypożyczenia czytelnika {{czytelnik}}</h1>
+
+    {% for pozycja in ksiazki %}
+    <li>
+        {{pozycja}}
+    </li>
+{% endfor %}
+</body>
+</html>

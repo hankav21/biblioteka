@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obecne wypożyczenia czytelnika</title>
+    <a href="{{ url_for('login') }}">Wyloguj</a>
+    <a href="{{ url_for('czytelnik', czytelnik=czytelnik) }}">Wroc do menu</a>
+</head>
+<body>
+    <h1>Obecne wypożyczenia czytelnika {{czytelnik}}</h1>
+
+    <h3>Rezerwacje:</h3>
+    {% for pozycja in zarezerwowane %}
+        <li>
+            {{ pozycja}}
+            <button>Anuluj rezerwacje</button>
+        </li>
+    {% endfor %}
+
+    <h3>Wypozyczone:</h3>
+    {% for pozycja in wypozyczone %}
+        <li>
+            {{ pozycja}}
+        </li>
+    {% endfor %}
+</body>
+</html>
