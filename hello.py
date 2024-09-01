@@ -7,6 +7,7 @@ from markupsafe import escape
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy.ext.associationproxy import association_proxy
 
 # SQLAlchemy 
 
@@ -16,26 +17,32 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 class Uzytkownik(db.Model):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    login: Mapped[str] = mapped_column(String(16), unique=True, nullable=False)
-    haslo: Mapped[str] = mapped_column(String(64), nullable=False)
-    ksiazki: Mapped[List["Ksiazka"]] = relationship("Wypozyczenie", back_populates="uzytkownik")
-    
+    __tablename__ = "uzytkownicy"
+    id = db.Column(db.Integer, primary_key=True)
+    login = db.Column(db.String(16), unique=True, nullable=False)
+    haslo = db.Column(db.String(64), nullable=False)
+    wypozyczenia = db.relationship("Wypozyczenie", back_populates="uzytkownik")
+    ksiazki = association_proxy("wypozyczenia", "ksiazka")
+
 class Ksiazka(db.Model):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    tytul: Mapped[str] = mapped_column(String(128), nullable=False)
-    autor: Mapped[str] = mapped_column(String(128), nullable=False)
-    uzytkownicy: Mapped[List["Uzytkownik"]] = relationship("Wypozyczenie", back_populates="ksiazka")
-    
+    __tablename__ = "ksiazki"
+    id = db.Column(db.Integer, primary_key=True)
+    tytul = db.Column(db.String(128), nullable=False)
+    autor = db.Column(db.String(128), nullable=False)
+    wypozyczenia = db.relationship("Wypozyczenie", back_populates="ksiazka")
+    uzytkownicy = association_proxy("wypozyczenia", "uzytkownik")
+
 class Wypozyczenie(db.Model):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    ksiazka_id: Mapped[int] = mapped_column(ForeignKey("ksiazka.id"))
-    uzytkownik_id: Mapped[int] = mapped_column(ForeignKey("uzytkownik.id"))
-    status: Mapped[str] = mapped_column(nullable=False)
-    data_wypozyczenia: Mapped[datetime.date] = mapped_column(nullable=False)
-    data_zwrotu: Mapped[datetime.date] = mapped_column(nullable=False)
-    ksiazka: Mapped["Ksiazka"] = relationship(back_populates="uzytkownicy")
-    uzytkownik: Mapped["Uzytkownik"] = relationship(back_populates="ksiazki")
+    __tablename__ = "wypozyczenia"
+    id = db.Column(db.Integer, primary_key=True)
+    uzytkownik_id = db.Column(db.Integer, db.ForeignKey("uzytkownicy.id"), nullable=False)
+    ksiazka_id = db.Column(db.Integer, db.ForeignKey("ksiazki.id"), nullable=False)
+    status = db.Column(db.Integer, nullable=False)
+    data_wypozyczenia = db.Column(db.Date, nullable=False)
+    data_zwrotu = db.Column(db.Date, nullable=False)
+
+    uzytkownik = db.relationship("Uzytkownik", back_populates="wypozyczenia")
+    ksiazka = db.relationship("Ksiazka", back_populates="wypozyczenia")
 # FLASK
 
 app = Flask(__name__)
@@ -50,17 +57,13 @@ def home():
 
 @app.route("/login")
 def login():
-    #uzytkownik = Uzytkownik(id=1, login="admin", haslo="admin")
-    #db.session.add(uzytkownik)
-    #db.session.commit()
     return render_template("login.html")
 
 @app.route("/lista_ksiazek")
 def lista_ksiazek():
     ksiazki=[["tytul","autor","stan"], ["tytul2","autor2","stan2"]]
-    ksiazka = db.get_or_404(Ksiazka, 1)
-    print(ksiazka.uzytkownicy[0].data_wypozyczenia)
-    return render_template("lista_ksiazek.html", ksiazki=ksiazki, k=ksiazka)
+    ksiazka = Ksiazka.query.get(1)
+    return render_template("lista_ksiazek.html", ksiazki=ksiazki, k=ksiazka.wypozyczenia)
 
 @app.route("/lista_ksiazek/<ksiazka>")
 def widok_ksiazki(ksiazka):
