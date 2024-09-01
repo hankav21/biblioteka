@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obecne wypożyczenia czytelnika</title>
-    <a href="{{ url_for('login') }}">Wyloguj</a>
-    <a href="{{ url_for('czytelnik', czytelnik=czytelnik) }}">Wroc do menu</a>
+    {% include '_navbar_czytelnik.html' %}
 </head>
 <body>
     <h1>Obecne wypożyczenia czytelnika {{czytelnik}}</h1>
