@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Witaj {{czytelnik}}!</h1>
-    <h3><a href="{{ url_for('lista_ksiazek') }}">Przegladaj biblioeke</a></h3>
+    <h3><a href="{{ url_for('lista_ksiazek', czytelnik=czytelnik) }}">Przegladaj biblioeke</a></h3>
     <h3><a href="{{ url_for('czytelnik_wypozyczenia', czytelnik=czytelnik) }}">Przegladaj wypożyczenia</a></h3>
     <h3><a href="{{ url_for('czytelnik_historia', czytelnik=czytelnik) }}">Przegladaj Historyczne wypożyczenia</a></h3>
     

@@ -1,7 +1,7 @@
 import datetime
 from typing import List
 
-from flask import Flask, redirect, url_for, render_template
+from flask import Flask, redirect, request, url_for, render_template
 from markupsafe import escape
 
 from flask_sqlalchemy import SQLAlchemy
@@ -59,41 +59,70 @@ def home():
 def login():
     return render_template("login.html")
 
-@app.route("/lista_ksiazek")
-def lista_ksiazek():
-    ksiazki=[["tytul","autor","stan"], ["tytul2","autor2","stan2"]]
-    ksiazka = Ksiazka.query.get(1)
-    return render_template("lista_ksiazek.html", ksiazki=ksiazki, k=ksiazka.wypozyczenia)
+@app.route("/<czytelnik>/lista_ksiazek")
+def lista_ksiazek(czytelnik):
+    ksiazki=Ksiazka.query.all()
+    #ksiazka = Ksiazka.query.get(1)
+    return render_template("lista_ksiazek.html", ksiazki=ksiazki, czytelnik=czytelnik)
 
-@app.route("/lista_ksiazek/<ksiazka>")
-def widok_ksiazki(ksiazka):
-    return render_template("ksiazka.html", ksiazka=ksiazka)
+@app.route("/<czytelnik>/lista_ksiazek/<ksiazka>")
+def widok_ksiazki(czytelnik, ksiazka):
+    return render_template("ksiazka.html", ksiazka=ksiazka, czytelnik=czytelnik)
 
 @app.route("/<czytelnik>")
 def czytelnik(czytelnik):
-    return render_template("czytelnik.html",czytelnik=czytelnik)
+    return render_template("czytelnik.html", czytelnik=czytelnik)
 
 @app.route("/<czytelnik>/wypozyczenia")
 def czytelnik_wypozyczenia(czytelnik):
-    ksiazki_zarezerwowane=[["tytul","autor","data zamowienia"], ["tytul2","autor2"," xx-xx-xxxx"]]
-    ksiazki_wypozyczone=[["tytul","autor","data do zwrotu"], ["tytul2","autor2","xx-xx-xxxx"]]
+    zalogowany_czytelnik = Uzytkownik.query.filter_by(login=czytelnik).first()
+    #print(zalogowany_czytelnik.wypozyczenia[0])
+    #print(Uzytkownik.query.filter_by(login=czytelnik).first())
+    '''for instance in Uzytkownik.query.filter_by(login=czytelnik).all():
+        print(instance.login, instance.haslo, instance.ksiazki)
+        for b in instance.ksiazki:
+            print(b.autor)
+    print(Uzytkownik.query.filter_by(login=czytelnik).first().ksiazki[0].autor)'''
+    
+   
+    ksiazki_zarezerwowane = [wypozyczenie.ksiazka for wypozyczenie in zalogowany_czytelnik.wypozyczenia if wypozyczenie.status == "Z"]
+    ksiazki_wypozyczone= [wypozyczenie.ksiazka for wypozyczenie in zalogowany_czytelnik.wypozyczenia if wypozyczenie.status == "W"]
+    
     return render_template("czytelnik_wypozyczenia.html", czytelnik=czytelnik, zarezerwowane=ksiazki_zarezerwowane, wypozyczone=ksiazki_wypozyczone)
 
 @app.route("/<czytelnik>/historia")
 def czytelnik_historia(czytelnik):
-    ksiazki=[["tytul","autor","data zwrotu"], ["tytul2","autor2","xx-xx-xxxx"]]
+    zalogowany_czytelnik = Uzytkownik.query.filter_by(login=czytelnik).first()
+    ksiazki= [wypozyczenie.ksiazka for wypozyczenie in zalogowany_czytelnik.wypozyczenia if wypozyczenie.status == "H"]
+    
     return render_template("czytelnik_historia.html", czytelnik=czytelnik, ksiazki=ksiazki)
 
 @app.route("/bibliotekarz")
 def bibliotekarz():
     return render_template("bibliotekarz.html")
 
-@app.route("/bibliotekarz/dodaj_ksiazke")
+@app.route("/bibliotekarz/dodaj_ksiazke", methods=['POST', 'GET'])
 def dodaj_ksiazke():
+    if request.method == 'POST':
+        autor = request.form.get('autor')
+        tytul = request.form.get('tytul')
+        
+        nowa_ksiazka = Ksiazka(id=Ksiazka.query.count()+1, autor=autor, tytul=tytul)
+        db.session.add(nowa_ksiazka)
+        db.session.commit()
     return render_template("dodaj_ksiazke.html")
 
-@app.route("/bibliotekarz/dodaj_uzytkownika")
+@app.route("/bibliotekarz/dodaj_uzytkownika",  methods=['GET', 'POST'])
 def dodaj_uzytkownika():
+    if request.method == 'POST': 
+        # Retrieve the text from the textarea 
+        haslo = request.form.get('haslo') 
+        login = request.form.get('login') 
+        
+        nowy_uzytkownik = Uzytkownik(id=Uzytkownik.query.count()+1 , login=login, haslo=haslo)
+        db.session.add(nowy_uzytkownik)
+        db.session.commit()
+        
     return render_template("dodaj_uzytkownika.html")
 
 @app.route("/bibliotekarz/wypozycz")
