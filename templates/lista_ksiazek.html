@@ -11,8 +11,9 @@
 
     {% for pozycja in ksiazki %}
         <li>
-            {{ pozycja}}
-            <a href="{{ url_for('widok_ksiazki', ksiazka=pozycja, czytelnik=czytelnik) }}">Szczegoly</a>
+            Tytuł: {{  pozycja.tytul}}
+            Autor: {{  pozycja.autor}}
+            <a href="{{ url_for('widok_ksiazki', ksiazka=pozycja.id, czytelnik=czytelnik) }}">Szczegoly</a>
         </li>
     {% endfor %}
 </body>

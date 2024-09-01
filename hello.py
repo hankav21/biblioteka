@@ -81,6 +81,9 @@ def lista_ksiazek(czytelnik):
 
 @app.route("/<czytelnik>/lista_ksiazek/<ksiazka>")
 def widok_ksiazki(czytelnik, ksiazka):
+    ksiazka = Ksiazka.query.filter_by(id=ksiazka).first()
+    print(ksiazka.wypozyczenia[-1].status)
+    print(ksiazka.wypozyczenia[-1])
     return render_template("ksiazka.html", ksiazka=ksiazka, czytelnik=czytelnik)
 
 @app.route("/<czytelnik>")
