@@ -1,7 +1,7 @@
 import datetime
 from typing import List
 
-from flask import Flask, redirect, request, url_for, render_template
+from flask import Flask, flash, redirect, request, url_for, render_template
 from markupsafe import escape
 
 from flask_sqlalchemy import SQLAlchemy
@@ -55,8 +55,22 @@ with app.app_context():
 def home():
     return redirect(url_for("login"))
 
-@app.route("/login")
+@app.route("/login", methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        login = request.form.get("login")
+        haslo = request.form.get("haslo")
+        
+        # Sprawdzenie, czy użytkownik istnieje w bazie danych
+        uzytkownik = Uzytkownik.query.filter_by(login=login, haslo=haslo).first()
+        
+        if uzytkownik:
+            return redirect(url_for("czytelnik", czytelnik=login))
+        else:
+            # Jeśli użytkownik nie istnieje, pokaż błąd
+            #flash("Niepoprawny login lub hasło", "danger")
+            print("nei ma takeigo uzytkownika")
+    
     return render_template("login.html")
 
 @app.route("/<czytelnik>/lista_ksiazek")
