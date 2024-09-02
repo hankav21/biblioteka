@@ -7,11 +7,14 @@
     <title>Historyczne wypozyczenia czytelnika {{czytelnik}}</title>
 </head>
 <body>
-    <h1>Archiwalne wypożyczenia czytelnika {{czytelnik}}</h1>
+    <h1>Archiwalne wypożyczenia czytelnika {{wypozyczenia[0].uzytkownik.login}}</h1>
 
-    {% for pozycja in ksiazki %}
+    {% for w in wypozyczenia %}
     <li>
-        {{pozycja}}
+        Autor: <b> {{w.ksiazka.autor}} </b> 
+        Tytuł: {{w.ksiazka.tytul}}
+        Data wypozyczenia: {{w.data_wypozyczenia}} 
+        Data zwrotu: {{w.data_zwrotu}}
     </li>
 {% endfor %}
 </body>

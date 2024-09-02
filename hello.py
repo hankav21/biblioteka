@@ -111,8 +111,10 @@ def czytelnik_wypozyczenia(czytelnik):
 def czytelnik_historia(czytelnik):
     zalogowany_czytelnik = Uzytkownik.query.filter_by(login=czytelnik).first()
     ksiazki= [wypozyczenie.ksiazka for wypozyczenie in zalogowany_czytelnik.wypozyczenia if wypozyczenie.status == "H"]
+    w = Wypozyczenie.query.filter_by(uzytkownik_id=zalogowany_czytelnik.id, status="H").all()
     
-    return render_template("czytelnik_historia.html", czytelnik=czytelnik, ksiazki=ksiazki)
+    
+    return render_template("czytelnik_historia.html", wypozyczenia=w, czytelnik=czytelnik)
 
 @app.route("/bibliotekarz")
 def bibliotekarz():
