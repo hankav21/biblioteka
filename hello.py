@@ -81,7 +81,6 @@ def lista_ksiazek(czytelnik):
 
 @app.route("/<czytelnik>/lista_ksiazek/<ksiazka>", methods=['POST','GET'])
 def widok_ksiazki(czytelnik, ksiazka):
-    print("sz")
     if request.method == 'POST':
         id_ksiazki = request.form.get("ksiazka_id")
         uzytkownik_id = Uzytkownik.query.filter_by(login=czytelnik).first().id
@@ -96,9 +95,9 @@ def widok_ksiazki(czytelnik, ksiazka):
         db.session.add(nowe_wypozyczenie)
         db.session.commit()
 
-    print("z")
     ksiazka = Ksiazka.query.filter_by(id=ksiazka).first()
-    print("k:" ,ksiazka)
+    
+    print("size:" ,len(ksiazka.wypozyczenia))
     return render_template("ksiazka.html", ksiazka=ksiazka, czytelnik=czytelnik)
 
 @app.route("/<czytelnik>")
