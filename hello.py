@@ -79,19 +79,45 @@ def lista_ksiazek(czytelnik):
     #ksiazka = Ksiazka.query.get(1)
     return render_template("lista_ksiazek.html", ksiazki=ksiazki, czytelnik=czytelnik)
 
-@app.route("/<czytelnik>/lista_ksiazek/<ksiazka>")
+@app.route("/<czytelnik>/lista_ksiazek/<ksiazka>", methods=['POST','GET'])
 def widok_ksiazki(czytelnik, ksiazka):
+    print("sz")
+    if request.method == 'POST':
+        id_ksiazki = request.form.get("ksiazka_id")
+        uzytkownik_id = Uzytkownik.query.filter_by(login=czytelnik).first().id
+        
+        print(id_ksiazki)
+        print(uzytkownik_id)
+        
+        nowe_wypozyczenie = Wypozyczenie(id=Wypozyczenie.query.count()+1, uzytkownik_id=uzytkownik_id, ksiazka_id=id_ksiazki, status="Z", data_wypozyczenia=datetime.date.today(), data_zwrotu=datetime.date.today()+datetime.timedelta(days=3))
+        
+        print(nowe_wypozyczenie)
+        
+        db.session.add(nowe_wypozyczenie)
+        db.session.commit()
+
+    print("z")
     ksiazka = Ksiazka.query.filter_by(id=ksiazka).first()
-    print(ksiazka.wypozyczenia[-1].status)
-    print(ksiazka.wypozyczenia[-1])
+    print("k:" ,ksiazka)
     return render_template("ksiazka.html", ksiazka=ksiazka, czytelnik=czytelnik)
 
 @app.route("/<czytelnik>")
 def czytelnik(czytelnik):
     return render_template("czytelnik.html", czytelnik=czytelnik)
 
-@app.route("/<czytelnik>/wypozyczenia")
+@app.route("/<czytelnik>/wypozyczenia", methods=["POST", 'GET'])
 def czytelnik_wypozyczenia(czytelnik):
+    
+    if request.method == 'POST':
+        rezerwacja_id = request.form.get("rezerwacja_id")    
+        #print(f"Rezerwacja o ID {rezerwacja_id} została anulowana.")
+        #print(request.form.get("rezerwacja_id"))
+        anulowane_wpozyczenie = Wypozyczenie.query.get(rezerwacja_id)
+        anulowane_wpozyczenie.status = 'A'
+        db.session.commit()
+        
+    
+    
     zalogowany_czytelnik = Uzytkownik.query.filter_by(login=czytelnik).first()
     #print(zalogowany_czytelnik.wypozyczenia[0])
     #print(Uzytkownik.query.filter_by(login=czytelnik).first())
@@ -102,10 +128,13 @@ def czytelnik_wypozyczenia(czytelnik):
     print(Uzytkownik.query.filter_by(login=czytelnik).first().ksiazki[0].autor)'''
     
    
-    ksiazki_zarezerwowane = [wypozyczenie.ksiazka for wypozyczenie in zalogowany_czytelnik.wypozyczenia if wypozyczenie.status == "Z"]
-    ksiazki_wypozyczone= [wypozyczenie.ksiazka for wypozyczenie in zalogowany_czytelnik.wypozyczenia if wypozyczenie.status == "W"]
+    #ksiazki_zarezerwowane = [wypozyczenie.ksiazka for wypozyczenie in zalogowany_czytelnik.wypozyczenia if wypozyczenie.status == "Z"]
+    #ksiazki_wypozyczone= [wypozyczenie.ksiazka for wypozyczenie in zalogowany_czytelnik.wypozyczenia if wypozyczenie.status == "W"]
     
-    return render_template("czytelnik_wypozyczenia.html", czytelnik=czytelnik, zarezerwowane=ksiazki_zarezerwowane, wypozyczone=ksiazki_wypozyczone)
+    rezerwacje = Wypozyczenie.query.filter_by(uzytkownik_id=zalogowany_czytelnik.id, status="Z").all()
+    wypozyczenia = Wypozyczenie.query.filter_by(uzytkownik_id=zalogowany_czytelnik.id, status="W").all()
+    
+    return render_template("czytelnik_wypozyczenia.html", czytelnik=czytelnik, rezerwacje=rezerwacje, wypozyczenia=wypozyczenia)
 
 @app.route("/<czytelnik>/historia")
 def czytelnik_historia(czytelnik):

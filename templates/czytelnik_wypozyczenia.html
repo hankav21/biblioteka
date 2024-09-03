@@ -10,17 +10,21 @@
     <h1>Obecne wypożyczenia czytelnika {{czytelnik}}</h1>
 
     <h3>Rezerwacje:</h3>
-    {% for pozycja in zarezerwowane %}
+    {% for pozycja in rezerwacje %}
+    <form method="post">
         <li>
-            {{ pozycja}}
-            <button>Anuluj rezerwacje</button>
+            {{pozycja.ksiazka.autor}} "{{pozycja.ksiazka.tytul}}" data rezerwacji: {{pozycja.data_wypozyczenia}}
+            <input type="hidden" name="rezerwacja_id" value="{{ pozycja.id }}">
+            <button type="submit" >Anuluj rezerwacje</button>
         </li>
+    </form>
     {% endfor %}
 
     <h3>Wypozyczone:</h3>
-    {% for pozycja in wypozyczone %}
+    {% for pozycja in wypozyczenia %}
         <li>
-            {{ pozycja}}
+            {{pozycja.ksiazka.autor}} "{{pozycja.ksiazka.tytul}}" data wypożyczenia: {{pozycja.data_wypozyczenia}} 
+            termin oddania: {{pozycja.data_zwrotu}}
         </li>
     {% endfor %}
 </body>

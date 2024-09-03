@@ -10,16 +10,20 @@
     <h1> ksiazka: {{ksiazka.id}} </h1>
     <h3> tytuł: {{ksiazka.tytul}}</h3>
     <h3> autor: {{ksiazka.autor}} </h3>
-    <h3> status: 
-        {% if ksiazka.wypozyczenia[-1].status == "H" %}
-            Dostępna
-            <button>Zarezerwuj</button>
-        {% elif ksiazka.wypozyczenia[-1].status == "W" %}
+    <h3> status:       
+        {% if ksiazka.wypozyczenia[-1].status == "W" %}
             Wypożyczona
         {% elif ksiazka.wypozyczenia[-1].status == "Z" %}
             Zarezerwowana
         {% else %}
-            Status nieznany
+            Dostępna
+            <form method="post">
+                <li>
+                    <input type="hidden" name="ksiazka_id" value="{{ ksiazka.id }}">
+                    <button type="submit" >Zarezerwuj</button>
+                </li>
+            </form>
+            
         {% endif %}
     </h3>
 </body>
