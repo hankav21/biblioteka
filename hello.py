@@ -172,8 +172,44 @@ def dodaj_uzytkownika():
         
     return render_template("dodaj_uzytkownika.html")
 
-@app.route("/bibliotekarz/wypozycz")
-def wypozycz():
-    ksiazka = "ksiazka x"
-    czytelnik = "czytelnik y"
-    return render_template("wypozycz.html", ksiazka=ksiazka, czytelnik=czytelnik)
+@app.route("/bibliotekarz/wyszukaj_czytelnika", methods=['POST','GET'])
+def wyszukaj_czytelnika():
+    
+    if request.method == 'POST':
+        akcja = request.form.get('przycisk') 
+        if akcja == 'czytelnik':
+            login_czytelnika = request.form.get('czytelnik') 
+            czytelnik = Uzytkownik.query.filter_by(login=login_czytelnika).first()
+            czytelnik_wypozyczenia = Wypozyczenie.query.filter_by(uzytkownik_id=czytelnik.id, status="Z").all()
+            czytelnik_zwroty = Wypozyczenie.query.filter_by(uzytkownik_id=czytelnik.id, status="W").all()
+           
+            return redirect(url_for('obsluz', login_czytelnika=login_czytelnika))
+
+
+    return render_template("wyszukaj_czytelnika.html")
+
+@app.route("/bibliotekarz/wyszukaj_czytelnika/<login_czytelnika>/obsluz", methods=['POST','GET'])
+def obsluz(login_czytelnika):
+   
+    czytelnik = Uzytkownik.query.filter_by(login=login_czytelnika).first()
+    czytelnik_wypozyczenia = Wypozyczenie.query.filter_by(uzytkownik_id=czytelnik.id, status="Z").all()
+    czytelnik_zwroty = Wypozyczenie.query.filter_by(uzytkownik_id=czytelnik.id, status="W").all()
+    
+    if request.method == 'POST':
+     
+        id_wypozyczenia = request.form.get('wypozyczenie_id')
+        print("id: ", id_wypozyczenia)
+        obslugiwane_wypozyczenie = Wypozyczenie.query.filter_by(id=id_wypozyczenia).first()
+        print(czytelnik_wypozyczenia)
+        print("ow: ", obslugiwane_wypozyczenie)
+        if(obslugiwane_wypozyczenie.status == "W"):
+            obslugiwane_wypozyczenie.status = "H"
+        elif(obslugiwane_wypozyczenie.status == "Z"):
+            obslugiwane_wypozyczenie.status = "W"
+        czytelnik_wypozyczenia = Wypozyczenie.query.filter_by(uzytkownik_id=czytelnik.id, status="Z").all()
+        czytelnik_zwroty = Wypozyczenie.query.filter_by(uzytkownik_id=czytelnik.id, status="W").all()
+          
+        db.session.commit()      
+    
+    return render_template("obsluz.html", login_czytelnika=login_czytelnika, zwroty=czytelnik_zwroty, wypozyczenia=czytelnik_wypozyczenia)
+       

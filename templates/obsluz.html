@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obsluz czytelnika</title>
+</head>
+<body>
+    <form method="POST">
+        <h2>Czytelnik {{login_czytelnika}}</h2>
+        <h3>Lista ksiazek do wypozyczenia: </h3>
+            {% for w in wypozyczenia %}
+                <li>
+                    {{w.ksiazka.autor}} "{{w.ksiazka.tytul}}"
+                    Data zarezerwowania: {{w.data_wypozyczenia}}
+                    Data zakonczenia rezerwacji: {{w.data_zwrotu}}
+                    
+                        <input type="hidden" name="wypozyczenie_id" value="{{w.id}}">
+                        <button type="submit" value="y">Wypozycz</button> 
+                    
+                </li>
+            {% endfor %}
+        <h3>Lista ksiazek do zwrotu: </h3>
+            {% for w in zwroty %}
+            <li>
+                {{w.ksiazka.autor}} "{{w.ksiazka.tytul}}"
+                Data wypozyczenia: {{w.data_wypozyczenia}}
+                Data terminu zwrotu: {{w.data_zwrotu}}
+                
+                    <input type="hidden" name="wypozyczenie_id" value="{{w.id}}">
+                    <button type="submit" value="y">Przyjmij zwrot</button> 
+                
+            </li>
+            {% endfor %}
+    </form>
+</body>
+</html>
