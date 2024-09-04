@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista ksiazek biblioteki</title>
+</head>
+<body>
+    <h1>Lista ksiazek</h1>
+
+    {% for pozycja in ksiazki %}
+        <li>
+            Tytuł: {{  pozycja.tytul}}
+            Autor: {{  pozycja.autor}}
+            <a href="{{ url_for('historia_ksiazki', autor=pozycja.autor, tytul=pozycja.tytul, ksiazka_id=pozycja.id) }}">Szczegoly</a>
+        </li>
+    {% endfor %}
+</body>
+</html>

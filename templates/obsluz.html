@@ -15,8 +15,8 @@
                     Data zarezerwowania: {{w.data_wypozyczenia}}
                     Data zakonczenia rezerwacji: {{w.data_zwrotu}}
                     
-                        <input type="hidden" name="wypozyczenie_id" value="{{w.id}}">
-                        <button type="submit" value="y">Wypozycz</button> 
+                    <input type="hidden" name="wypozyczenie_id" value="{{w.id}}">
+                    <button type="submit" value="y">Wypozycz</button> 
                     
                 </li>
             {% endfor %}
@@ -27,8 +27,8 @@
                 Data wypozyczenia: {{w.data_wypozyczenia}}
                 Data terminu zwrotu: {{w.data_zwrotu}}
                 
-                    <input type="hidden" name="wypozyczenie_id" value="{{w.id}}">
-                    <button type="submit" value="y">Przyjmij zwrot</button> 
+                <input type="hidden" name="wypozyczenie_id" value="{{w.id}}">
+                <button type="submit" value="y">Przyjmij zwrot</button> 
                 
             </li>
             {% endfor %}

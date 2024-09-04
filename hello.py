@@ -213,3 +213,18 @@ def obsluz(login_czytelnika):
     
     return render_template("obsluz.html", login_czytelnika=login_czytelnika, zwroty=czytelnik_zwroty, wypozyczenia=czytelnik_wypozyczenia)
        
+       
+@app.route("/bibliotekarz/ksiazki_biblioteki")
+def ksiazki_biblioteki():
+    ksiegozbior = Ksiazka.query.all()
+    return render_template("ksiazki_biblioteki.html", ksiazki=ksiegozbior)
+
+@app.route("/bibliotekarz/ksiazki_biblioteki/<autor>/<tytul>/<ksiazka_id>")
+def historia_ksiazki(autor, tytul, ksiazka_id):
+    print(autor)
+    print(tytul)
+    print(ksiazka_id)
+    wypozyczenia = Wypozyczenie.query.filter_by(ksiazka_id=ksiazka_id).all()
+    print(wypozyczenia)
+
+    return render_template("ksiazka_historia.html", wypozyczenia=wypozyczenia, autor=autor, tytul=tytul)

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <h2>
+        
+        Tytuł: {{ tytul}}
+        Autor: {{ autor}}
+    </h2>
+    {% for wypozyczenie in wypozyczenia %}
+        <li>
+            ID: {{wypozyczenie.id}}
+            Data poczatkowa: {{wypozyczenie.data_wypozyczenia}}
+            Data koncowa: {{wypozyczenie.data_zwrotu}}
+
+            Status: 
+            {% if wypozyczenie.status == "A" %}
+                Zamowienie zostało anulowane
+            {% elif wypozyczenie.status == "Z" %}
+                Zarezerwowana
+            {% elif wypozyczenie.status == "W" %}
+                Wypozyczona
+            {% else %}
+                Zwrocona
+            {% endif %}
+
+            Czytelnik: {{wypozyczenie.uzytkownik.login}}
+        </li>
+    {% endfor %}
+</body>
+</html>
