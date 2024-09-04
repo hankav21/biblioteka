@@ -113,6 +113,7 @@ def czytelnik_wypozyczenia(czytelnik):
         #print(request.form.get("rezerwacja_id"))
         anulowane_wpozyczenie = Wypozyczenie.query.get(rezerwacja_id)
         anulowane_wpozyczenie.status = 'A'
+        anulowane_wpozyczenie.data_zwrotu = datetime.date.today()
         db.session.commit()
         
     
@@ -204,8 +205,12 @@ def obsluz(login_czytelnika):
         print("ow: ", obslugiwane_wypozyczenie)
         if(obslugiwane_wypozyczenie.status == "W"):
             obslugiwane_wypozyczenie.status = "H"
+            obslugiwane_wypozyczenie.data_zwrotu = datetime.date.today()
         elif(obslugiwane_wypozyczenie.status == "Z"):
             obslugiwane_wypozyczenie.status = "W"
+            obslugiwane_wypozyczenie.data_wypozyczenia = datetime.date.today()
+            obslugiwane_wypozyczenie.data_zwrotu = datetime.date.today()+datetime.timedelta(days=14)
+        
         czytelnik_wypozyczenia = Wypozyczenie.query.filter_by(uzytkownik_id=czytelnik.id, status="Z").all()
         czytelnik_zwroty = Wypozyczenie.query.filter_by(uzytkownik_id=czytelnik.id, status="W").all()
           
